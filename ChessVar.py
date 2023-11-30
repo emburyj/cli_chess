@@ -4,6 +4,46 @@ GitHub username: emburyj
 Date: 11/22/23
 Description: Defines ChessVar, ChessBoard, and ChessPiece classes and subclasses
 '''
+'''DETAILED TEXT DESCRIPTIONS OF HOW TO HANDLE THE SCENARIOS
+1. Initializing the ChessVar class
+The initilization of the ChessVar class will include creating a ChessBoard (cb) object.
+When a cb object is initialized, ChessPiece objects of the appropriate subclass will be created and put in the correct
+place on the chess board. These pieces are tracked in a data member in the ChessBoard object called _board.
+
+2. Keeping track of turn order
+Turn order will be kept track using a private data member in the ChessBoard class.
+The _turn field will be updated from "Black" to "White" or vise versa if a valid move is made.
+
+3. Keeping track of the current board position
+Current board position will be kept track using a data member in the cb class. It will be a dictionary object named
+_board with keys that are strings representing an index on the board (ex: A1) and keys being ChessPiece (or appropriate subclass)
+objects. The _board object will be updated after a valid move is made.
+
+4. Determining if a regular move is valid
+Each ChessPiece (or appropriate subclass) will contain a data member called _possible_moves. When the make_move method 
+is called on the ChessVar object, the _gameboard data member (ChessBoard) will call the get_valid_moves method on itself
+with the from_square as the input. This will return a set object containing strings of valid to squares. The valid
+to squares will be determined as follows:
+- Get the ChessPiece object at the from square location in the _board data member
+- Traverse through the possible_moves object starting from current position, moving away from piece.
+- If you reach a possible move that has a piece of the same color, this and rest of the moves in that direction are not valid.
+- If you reach a possible move that has a piece of a different color, this is a possible move that would be a capture.
+- If the to_square argument is a valid move that would be a capture, the make_capture method would be called on the 
+chessboard object.
+
+5. Determining if a capture is valid
+If the move is determined to be valid and the move is a capture, the make_capture method is called. During this method,
+the _board data member of the chess board object is updated (piece moved, and piece removed). Also, the 
+_white_pieces/_black_pieces data member is updated as required.
+
+6. Determining the current state of the game
+The chessboard object will have a two data members named _white_pieces/_black_pieces. These are used to keep track of
+the number of pieces of each color remain on the board. When one of the data members reaches 0, the state of the game changes
+as appropriate.
+
+'''
+
+
 class ChessVar(object):
     def __init__(self):
         self._game_state = "UNFINISHED"
@@ -23,7 +63,15 @@ class ChessVar(object):
         # checks if game is over
         # calls make_move method for _gameboard
         # checks for winner and updates _game_state a/r
+        #
         pass
+
+    def update_game_state(self):
+        '''Method to update the _game_state field'''
+        if self._gameboard.get_white() == 0:
+            self._game_state = "BLACK_WINS"
+        elif self._gameboard.get_black() == 0:
+            self._game_state = "WHITE_WINS"
 
 class ChessBoard(object):
     def __init__(self):
@@ -84,6 +132,10 @@ class ChessBoard(object):
     def get_turn(self):
         '''Getter method for _turn field'''
         return self._turn
+
+    def get_gameover(self):
+        '''Getter method for _gameover field'''
+        return self._gameover
 
     def get_white(self):
         '''Getter method for _white_pieces field'''
