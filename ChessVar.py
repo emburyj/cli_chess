@@ -40,8 +40,31 @@ class ChessBoard(object):
         self._white_pieces = 16
         self._black_pieces = 16
         self._board = {} # dict - representing squares on board {str: Chesspiece obj}
-        self._turn = "White"
+        self._turn = "WHITE"
         # initialize board dict with pieces
+        alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+        for i in range(1, 9):
+            if i < 3:
+                current_color = 'WHITE'
+            else:
+                current_color = 'BLACK'
+
+            for letter in alpha:
+                if (i == 1 or i == 8) and (letter == 'a' or letter == 'h'):
+                    self._board[f"{letter}{i}"] = Rook(current_color, f"{letter}{i}")
+                elif (i == 1 or i == 8) and (letter == 'b' or letter =='g'):
+                    self._board[f"{letter}{i}"] = Knight(current_color, f"{letter}{i}")
+                elif (i == 1 or i == 8) and (letter == 'c' or letter == 'f'):
+                    self._board[f"{letter}{i}"] = Bishop(current_color, f"{letter}{i}")
+                elif (i == 1 or i == 8) and letter == 'd':
+                    self._board[f"{letter}{i}"] = King(current_color, f"{letter}{i}")
+                elif (i == 1 or i == 8) and letter == 'e':
+                    self._board[f"{letter}{i}"] = Queen(current_color, f"{letter}{i}")
+                elif i == 2 or i == 7:
+                    self._board[f"{letter}{i}"] = Pawn(current_color, f"{letter}{i}")
+                else:
+                    self._board[f"{letter}{i}"] = None
+
 
     def get_valid_moves(self, from_square):
         '''
@@ -49,6 +72,7 @@ class ChessBoard(object):
         :param from_square: String representing position on board
         :return: Set of strings representing valid moves
         '''
+        # maybe just check if input move is valid...
         pass
 
     def make_move(self, from_square, to_square):
@@ -79,16 +103,25 @@ class ChessBoard(object):
 
     def display_board(self):
         '''Method to display pieces on board using ascii art'''
-        # board_string = "   A   B   C   D   E   F   G   H   \n"
-        # for i in range(8, 0, -1):
-        #     current_row = f"{i|}"
+        board_string = "   a   b   c   d   e   f   g   h   \n"
+        alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+        for i in range(8, 0, -1):
+            current_row = f"{i}|"
+            for letter in alpha:
+                if self._board[f"{letter}{i}"]:
+                    current_row += str(self._board[f"{letter}{i}"]) + "|"
+                else:
+                    current_row += '   |'
+            board_string += current_row + '\n'
+
+        print(board_string)
 
     def update_turn(self):
         '''Method to change turn from black/white or white/black'''
-        if self._turn == "Black":
-            self._turn = "White"
+        if self._turn == "BLACK":
+            self._turn = "WHITE"
         else:
-            self._turn = "Black"
+            self._turn = "BLACK"
 
     def get_turn(self):
         '''Getter method for _turn field'''
@@ -115,7 +148,7 @@ class ChessPiece(object):
         self._current_position = starting_position # String representing current position on board
         self._possible_moves = set() # Set of strings representing all possible moves for piece
         self._fwd_direction = 1 # integer representing direction piece moves on board
-        if self._color == "Black":
+        if self._color == "BLACK":
             self._fwd_direction = -1
 
     def __repr__(self):
@@ -202,7 +235,7 @@ class Knight(ChessPiece):
 
     def __str__(self):
         '''Override str method because of duplicate initials with King..'''
-        return f"{self._color} H" # H is for horse, okay?
+        return f"{self._color[0]} H" # H is for horse, okay?
 
     def get_possible_moves(self):
         '''Method to determine all POSSIBLE moves for current location
