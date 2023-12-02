@@ -51,17 +51,17 @@ class ChessBoard(object):
 
             for letter in alpha:
                 if (i == 1 or i == 8) and (letter == 'a' or letter == 'h'):
-                    self._board[f"{letter}{i}"] = Rook(current_color, f"{letter}{i}")
+                    self._board[f"{letter}{i}"] = Rook(current_color, f"{letter}{i}", self._board)
                 elif (i == 1 or i == 8) and (letter == 'b' or letter =='g'):
-                    self._board[f"{letter}{i}"] = Knight(current_color, f"{letter}{i}")
+                    self._board[f"{letter}{i}"] = Knight(current_color, f"{letter}{i}", self._board)
                 elif (i == 1 or i == 8) and (letter == 'c' or letter == 'f'):
-                    self._board[f"{letter}{i}"] = Bishop(current_color, f"{letter}{i}")
+                    self._board[f"{letter}{i}"] = Bishop(current_color, f"{letter}{i}", self._board)
                 elif (i == 1 or i == 8) and letter == 'd':
-                    self._board[f"{letter}{i}"] = King(current_color, f"{letter}{i}")
+                    self._board[f"{letter}{i}"] = King(current_color, f"{letter}{i}", self._board)
                 elif (i == 1 or i == 8) and letter == 'e':
-                    self._board[f"{letter}{i}"] = Queen(current_color, f"{letter}{i}")
+                    self._board[f"{letter}{i}"] = Queen(current_color, f"{letter}{i}", self._board)
                 elif i == 2 or i == 7:
-                    self._board[f"{letter}{i}"] = Pawn(current_color, f"{letter}{i}")
+                    self._board[f"{letter}{i}"] = Pawn(current_color, f"{letter}{i}", self._board)
                 else:
                     self._board[f"{letter}{i}"] = None
 
@@ -142,8 +142,9 @@ class ChessBoard(object):
 
 class ChessPiece(object):
 
-    def __init__(self, color, starting_position):
+    def __init__(self, color, starting_position, board):
         self._color = color # String representing color of piece
+        self._board = board
         self._name = ' ' # String representing type of piece (ex: pawn, bishop, etc.)
         self._current_position = starting_position # String representing current position on board
         self._possible_moves = set() # Set of strings representing all possible moves for piece
@@ -167,7 +168,7 @@ class ChessPiece(object):
         :return:
         '''
         self._current_position = new_position
-        self._get_possible_moves()
+        self.get_possible_moves()
 
     def get_possible_moves(self):
         '''Placeholder method to determine and update all POSSIBLE moves for current location
@@ -193,8 +194,8 @@ class ChessPiece(object):
 
 class King(ChessPiece):
 
-    def __init__(self, color, starting_location):
-        super().__init__(color, starting_location)
+    def __init__(self, color, starting_location, board):
+        super().__init__(color, starting_location, board)
         self._name = 'King'
 
     def get_possible_moves(self):
@@ -205,8 +206,8 @@ class King(ChessPiece):
 
 class Queen(ChessPiece):
 
-    def __init__(self, color, starting_location):
-        super().__init__(color, starting_location)
+    def __init__(self, color, starting_location, board):
+        super().__init__(color, starting_location, board)
         self._name = 'Queen'
 
     def get_possible_moves(self):
@@ -217,8 +218,8 @@ class Queen(ChessPiece):
 
 class Bishop(ChessPiece):
 
-    def __init__(self, color, starting_location):
-        super().__init__(color, starting_location)
+    def __init__(self, color, starting_location, board):
+        super().__init__(color, starting_location, board)
         self._name = 'Bishop'
 
     def get_possible_moves(self):
@@ -229,8 +230,8 @@ class Bishop(ChessPiece):
 
 class Knight(ChessPiece):
 
-    def __init__(self, color, starting_location):
-        super().__init__(color, starting_location)
+    def __init__(self, color, starting_location, board):
+        super().__init__(color, starting_location, board)
         self._name = 'Knight'
 
     def __str__(self):
@@ -246,8 +247,8 @@ class Knight(ChessPiece):
 
 class Rook(ChessPiece):
 
-    def __init__(self, color, starting_location):
-        super().__init__(color, starting_location)
+    def __init__(self, color, starting_location, board):
+        super().__init__(color, starting_location, board)
         self._name = 'Rook'
 
     def get_possible_moves(self):
@@ -258,17 +259,26 @@ class Rook(ChessPiece):
 
 class Pawn(ChessPiece):
 
-    def __init__(self, color, starting_location):
-        super().__init__(color, starting_location)
+    def __init__(self, color, starting_location, board):
+        super().__init__(color, starting_location, board)
         self._name = 'Pawn'
         self._first_turn = True
+        self.get_possible_moves()
 
     def get_possible_moves(self):
         '''Method to determine all POSSIBLE moves for current location
             Updates _possible_moves field
             On first move, Pawn can move two spaces forward
             Otherwise, Pawn can move one space forward'''
-        pass
+        self._possible_moves = set()
+        if self._current_position == 1 or self._current_position == 8:
+            return
+        else:
+            if self._first_turn:
+                self._possible_moves.add(f"{self._current_position[0]}{int(self._current_position[1]) + self._fwd_direction * 2}")
+                self._first_turn = False
+            self._possible_moves.add(f"{self._current_position[0]}{int(self._current_position[1]) + self._fwd_direction}")
+
 
 
 
