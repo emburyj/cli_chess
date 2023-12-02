@@ -182,7 +182,7 @@ class ChessPiece(object):
         :to_square: String representing square to move to
         :return: Boolean
         '''
-        return True
+        return False # for now
 
     def get_color(self):
         '''Getter method for _color field'''
@@ -274,21 +274,16 @@ class Pawn(ChessPiece):
         self._first_turn = True
         # self.get_possible_moves()
 
-    # def get_possible_moves(self):
-    #     '''Method to determine all POSSIBLE moves for current location
-    #         Updates _possible_moves field
-    #         On first move, Pawn can move two spaces forward
-    #         Otherwise, Pawn can move one space forward'''
-    #     self._possible_moves = set()
-    #     if self._current_position == 1 or self._current_position == 8:
-    #         return
-    #     else:
-    #         if self._first_turn:
-    #             self._possible_moves.add(f"{self._current_position[0]}{int(self._current_position[1]) + self._fwd_direction * 2}")
-    #             self._first_turn = False
-    #         self._possible_moves.add(f"{self._current_position[0]}{int(self._current_position[1]) + self._fwd_direction}")
-
-
+    def validate_move(self, to_square):
+        '''
+        Method to validate move for pawn.
+        On first move, Pawn can move two spaces forward
+        Otherwise, Pawn can move one space forward
+        Captures opponents if they are 1 fwd space to the diagonal l/r
+        :to_square: String representing square to move to
+        :return: Boolean
+        '''
+        return False
 
 
 
