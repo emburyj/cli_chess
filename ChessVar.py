@@ -163,10 +163,7 @@ class ChessPiece(object):
         self._board = board
         self._name = ' ' # String representing type of piece (ex: pawn, bishop, etc.)
         self._current_position = starting_position # String representing current position on board
-        self._possible_moves = set() # Set of strings representing all possible moves for piece
-        self._fwd_direction = 1 # integer representing direction piece moves on board
-        if self._color == "BLACK":
-            self._fwd_direction = -1
+        self._valid_directions = ['v', 'h', 'd']
 
     def __repr__(self):
         '''Override repr to describe name, color, and current location of piece.
@@ -206,50 +203,33 @@ class ChessPiece(object):
         '''Getter method for _current_position field'''
         return self._current_position
 
-    def check_vertical(self, to_square):
+    def check_direction(self, to_square):
         '''
-
-        :param to_square:
-        :return:
-        '''
-        from_row = int(self._current_position[1])
-        from_col = self._current_position[0]
-        to_row = int(to_square[1])
-        to_col = to_square[0]
-        # check if vertical
-        if from_col == to_col:
-            return True
-
-        return False
-
-    def check_horizontal(self, to_square):
-        '''
-
-        :param to_square:
-        :return:
+        Method to determine direction piece to be moved in. Vertical, Horizontal, or Diagonal.
+        :param to_square: String representing square on board to be moved.
+        :return: 'v', 'h', 'd' or None
         '''
         from_row = int(self._current_position[1])
         from_col = self._current_position[0]
         to_row = int(to_square[1])
         to_col = to_square[0]
-        # check if horizontal
-        if from_row == to_row:
-            return True
 
-        return False
-
-    def check_diagonal(self, to_square):
-        from_row = int(self._current_position[1])
-        from_col = self._current_position[0]
-        to_row = int(to_square[1])
-        to_col = to_square[0]
-        # check if diagonal
         row_diff = abs(from_row - to_row)
         col_diff = abs(ord(from_col) - ord(to_col))
-        if row_diff == col_diff:
-            return True
 
-        return False
+        # check if vertical
+        if from_col == to_col:
+            return 'v'
+
+        # check if horizontal
+        if from_row == to_row:
+            return 'h'
+
+        # check if diagonal
+        if row_diff == col_diff:
+            return 'd'
+
+        return None # not in a sanctioned direction
 
     def check_path(self, to_square, direction):
         '''
@@ -273,11 +253,6 @@ class King(ChessPiece):
         super().__init__(color, starting_location, board)
         self._name = 'King'
 
-    # def get_possible_moves(self):
-    #     '''Method to determine all POSSIBLE moves for current location
-    #         Updates _possible_moves field
-    #         King can move one space in any direction'''
-    #     pass
 
 class Queen(ChessPiece):
 
@@ -285,11 +260,7 @@ class Queen(ChessPiece):
         super().__init__(color, starting_location, board)
         self._name = 'Queen'
 
-    # def get_possible_moves(self):
-    #     '''Method to determine all POSSIBLE moves for current location
-    #         Updates _possible_moves field
-    #         Queen can move any number of spaces in any one direction'''
-    #     pass
+
 
 class Bishop(ChessPiece):
 
@@ -297,11 +268,7 @@ class Bishop(ChessPiece):
         super().__init__(color, starting_location, board)
         self._name = 'Bishop'
 
-    # def get_possible_moves(self):
-    #     '''Method to determine all POSSIBLE moves for current location
-    #         Updates _possible_moves field
-    #         Bishop can move any number of spaces in diagonal direction'''
-    #     pass
+
 
 class Knight(ChessPiece):
 
@@ -313,12 +280,6 @@ class Knight(ChessPiece):
         '''Override str method because of duplicate initials with King..'''
         return f"{self._color[0]} H" # H is for horse, okay?
 
-    # def get_possible_moves(self):
-    #     '''Method to determine all POSSIBLE moves for current location
-    #         Updates _possible_moves field
-    #         Knight can move three paces: two in H/V dir, then one in V/H dir'''
-    #     pass
-
 
 class Rook(ChessPiece):
 
@@ -326,11 +287,6 @@ class Rook(ChessPiece):
         super().__init__(color, starting_location, board)
         self._name = 'Rook'
 
-    # def get_possible_moves(self):
-    #     '''Method to determine all POSSIBLE moves for current location
-    #         Updates _possible_moves field
-    #         Rook can move any number of spaces in horizontal or vertical direction'''
-    #     pass
 
 class Pawn(ChessPiece):
 
@@ -338,7 +294,9 @@ class Pawn(ChessPiece):
         super().__init__(color, starting_location, board)
         self._name = 'Pawn'
         self._first_turn = True
-        # self.get_possible_moves()
+        self._fwd_direction = 1 # integer representing direction pawn moves on board
+        if self._color == "BLACK":
+            self._fwd_direction = -1
 
     def validate_move(self, to_square):
         '''
