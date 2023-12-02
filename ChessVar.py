@@ -22,13 +22,20 @@ class ChessVar(object):
         :return: Boolean
         '''
         # checks if game is over
-        # calls make_move method for _gameboard
-        # checks for winner and updates _game_state a/r
-        #
-        pass
+        if self._game_state == "UNFINISHED":
+            move = self._gameboard.make_move(from_square, to_square)
+            self.update_game_state()
+            if move:
+                print("Move Successful")
+                return True
+        print("Invalid Move!")
+        return False
 
     def update_game_state(self):
-        '''Method to update the _game_state field'''
+        '''
+        Method to update the _game_state field
+        return: void
+        '''
         if self._gameboard.get_white() == 0:
             self._game_state = "BLACK_WON"
         elif self._gameboard.get_black() == 0:
@@ -91,9 +98,11 @@ class ChessBoard(object):
             self._board[from_square] = None
             self._board[to_square] = piece_to_move
 
-        # update turn
-        self.update_turn()
-        return True # move successful
+            # update turn
+            self.update_turn()
+            return True # move successful
+
+        return False # not a valid move for that piece
 
     def make_capture(self, from_square, to_square):
         '''
