@@ -80,6 +80,7 @@ class ChessBoard(object):
         :return: Boolean - False if invalid move is given
         '''
         # check if arguments are valid
+        # checking if intputs are squares on board, and check if inputs are equal to eachother
         if from_square not in self._board.keys() or to_square not in self._board.keys() or to_square == from_square:
             return False
 
@@ -205,10 +206,66 @@ class ChessPiece(object):
         '''Getter method for _current_position field'''
         return self._current_position
 
-    # def get_possible_moves(self):
-    #     '''Getter method for _valid_moves field'''
-    #     return self._possible_moves
+    def check_vertical(self, to_square):
+        '''
 
+        :param to_square:
+        :return:
+        '''
+        from_row = int(self._current_position[1])
+        from_col = self._current_position[0]
+        to_row = int(to_square[1])
+        to_col = to_square[0]
+        # check if vertical
+        if from_col == to_col:
+            return True
+
+        return False
+
+    def check_horizontal(self, to_square):
+        '''
+
+        :param to_square:
+        :return:
+        '''
+        from_row = int(self._current_position[1])
+        from_col = self._current_position[0]
+        to_row = int(to_square[1])
+        to_col = to_square[0]
+        # check if horizontal
+        if from_row == to_row:
+            return True
+
+        return False
+
+    def check_diagonal(self, to_square):
+        from_row = int(self._current_position[1])
+        from_col = self._current_position[0]
+        to_row = int(to_square[1])
+        to_col = to_square[0]
+        # check if diagonal
+        row_diff = abs(from_row - to_row)
+        col_diff = abs(ord(from_col) - ord(to_col))
+        if row_diff == col_diff:
+            return True
+
+        return False
+
+    def check_path(self, to_square, direction):
+        '''
+        Method to deterime if path on board is clear of other pieces
+        :param to_square: String representing square on board to move
+        :return: Boolean
+        '''
+        # check if horizontal
+        if direction == 'h':
+            pass
+        if direction == 'v'
+            pass
+        if direction == 'd':
+            pass
+        # check if diag
+        return False
 
 class King(ChessPiece):
 
@@ -292,6 +349,34 @@ class Pawn(ChessPiece):
         :to_square: String representing square to move to
         :return: Boolean
         '''
+        # check if valid capture - special case for pawn
+        cap_piece = self._board[to_square]
+        col = self._current_position[0]
+        row = int(self._current_position[1])
+        cap_row = row + self._fwd_direction * 1
+        if cap_piece and cap_piece.get_color() != self._color:
+            cap_col1 = chr(ord(col) + 1)
+            cap_col2 = chr(ord(col) - 1)
+            cap1 = cap_col1 + str(row)
+            cap2 = cap_col2 + str(row)
+            if to_square == cap1 or to_square == cap2:
+                return True
+
+        # check if piece in path
+        # special case - first turn
+        if int(to_square[1]) - row == 2:
+            if self._first_turn:
+                for i in range(1, 3): # check if any pieces in path
+                    offset_square = row + self._fwd_direction * i
+                    if self._board[f"{col}{str(offset_square)}"]:
+                        return False
+                self._first_turn = False # no longer first turn
+                return True
+            else: # if not first turn
+                return False
+        if int(to_square[1]) - row == 1:
+            offset_square = row + self._fwd_direction
+
         return False
 
 
