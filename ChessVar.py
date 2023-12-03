@@ -202,7 +202,7 @@ class ChessPiece(object):
         self._board = board
         self._name = ' ' # String representing type of piece (ex: pawn, bishop, etc.)
         self._current_position = starting_position # String representing current position on board
-        self._valid_directions = ['v', 'h', 'd']
+        self._valid_directions = ['V', 'H', 'D']
 
     def __repr__(self):
         '''Override repr to describe name, color, and current location of piece.
@@ -246,7 +246,7 @@ class ChessPiece(object):
         '''
         Method to determine direction piece to be moved in. Vertical, Horizontal, or Diagonal.
         :param to_square: String representing square on board to be moved.
-        :return: String representing direction: 'v', 'h', 'd' or None
+        :return: String representing direction: 'V', 'H', 'D' or None
         '''
         from_row = int(self._current_position[1])
         from_col = self._current_position[0]
@@ -258,15 +258,15 @@ class ChessPiece(object):
 
         # check if vertical
         if from_col == to_col:
-            return 'v'
+            return 'V'
 
         # check if horizontal
         if from_row == to_row:
-            return 'h'
+            return 'H'
 
         # check if diagonal
         if row_diff == col_diff:
-            return 'd'
+            return 'D'
 
         return None # not in a sanctioned direction
 
@@ -281,15 +281,15 @@ class ChessPiece(object):
         to_row = int(to_square[1])
         to_col = to_square[0]
 
-        if direction == 'h':
+        if direction == 'H':
             pass
-        if direction == 'v':
+        if direction == 'V':
             dir = (to_row - from_row)//abs(to_row - from_row)
             for i in range(from_row + dir, to_row, dir):
                 if self._board[f"{from_col}{str(i)}"]:
                     return False
             return True
-        if direction == 'd':
+        if direction == 'D':
             pass
 
         return False
@@ -298,7 +298,7 @@ class King(ChessPiece):
 
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
-        self._name = 'King'
+        self._name = 'KING'
 
     def validate_move(self, to_square):
         '''
@@ -314,7 +314,7 @@ class Queen(ChessPiece):
 
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
-        self._name = 'Queen'
+        self._name = 'QUEEN'
 
 
 
@@ -322,7 +322,7 @@ class Bishop(ChessPiece):
 
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
-        self._name = 'Bishop'
+        self._name = 'BISHOP'
 
 
 
@@ -330,7 +330,7 @@ class Knight(ChessPiece):
 
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
-        self._name = 'Knight'
+        self._name = 'KNIGHT'
 
     def __str__(self):
         '''Override str method because of duplicate initials with King..'''
@@ -341,16 +341,16 @@ class Rook(ChessPiece):
 
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
-        self._name = 'Rook'
+        self._name = 'ROOK'
 
 
 class Pawn(ChessPiece):
 
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
-        self._name = 'Pawn'
+        self._name = 'PAWN'
         self._first_turn = True
-        self._valid_directions = ['v']
+        self._valid_directions = ['V']
         self._fwd_direction = 1 # integer representing direction pawn moves on board
         if self._color == "BLACK":
             self._fwd_direction = -1
