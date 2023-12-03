@@ -5,6 +5,8 @@ Date: 11/22/23
 Description: Defines ChessVar, ChessBoard, and ChessPiece classes and subclasses
 '''
 
+# TODO: next, maybe review requirements to make sure everything is being met with ChessVar.
+
 class ChessVar(object):
     def __init__(self):
         self._game_state = "UNFINISHED"
@@ -39,16 +41,34 @@ class ChessVar(object):
         Method to update the _game_state field
         return: void
         '''
-        if self._gameboard.get_white() == 0:
+        # check if white pieces of any type is zero
+        if 0 in self._gameboard.get_white().values():
             self._game_state = "BLACK_WON"
-        elif self._gameboard.get_black() == 0:
+        # check if black pieces of any type is zero
+        elif 0 in self._gameboard.get_black().values():
             self._game_state = "WHITE_WON"
 
 class ChessBoard(object):
     def __init__(self):
         self._gameover = False
-        self._white_pieces = 16
-        self._black_pieces = 16
+        self._pieces = { # dict representing num of pieces on board
+            'WHITE': {
+                'KING': 1,
+                'QUEEN': 1,
+                'BISHOP': 2,
+                'KNIGHT': 2,
+                'ROOK': 2,
+                'PAWN': 8
+            },
+            'BLACK': {
+                'KING': 1,
+                'QUEEN': 1,
+                'BISHOP': 2,
+                'KNIGHT': 2,
+                'ROOK': 2,
+                'PAWN': 8
+            }
+        }
         self._board = {} # dict - representing squares on board {str: Chesspiece obj}
         self._turn = "WHITE"
         # initialize board dict with pieces
@@ -100,10 +120,7 @@ class ChessBoard(object):
         if piece_to_move.validate_move(to_square):
             if self._board[to_square]: # check if this is a capture
                 # self.make_capture(from_square, to_square)
-                if piece_to_move.get_color() == "WHITE":
-                    self.decrease_black()
-                else:
-                    self.decrease_white()
+                self.decrease_piece_count(self._board[to_square].get_name(), self._board[to_square].get_color())
                 print("Capture Successful")
             piece_to_move.update_current_position(to_square)
             self._board[from_square] = None
@@ -152,19 +169,14 @@ class ChessBoard(object):
         else:
             self._turn = "BLACK"
 
-    def decrease_white(self):
+    def decrease_piece_count(self, name, color):
         '''
-        Method to decrease count of white pieces
-        :return: void
+        Method to decrease number of pieces on board.
+        :param name: String representing name of piece to decrement (ie PAWN etc)
+        :param color: String representing color of piece to decrement ("BLACK" or "WHITE")
+        :return: Void
         '''
-        self._white_pieces -= 1
-
-    def decrease_black(self):
-        '''
-        Method to decrease count of black pieces
-        :return: void
-        '''
-        self._black_pieces -= 1
+        self._pieces[color][name] -= 1
 
     def get_turn(self):
         '''Getter method for _turn field'''
@@ -175,12 +187,12 @@ class ChessBoard(object):
         return self._gameover
 
     def get_white(self):
-        '''Getter method for _white_pieces field'''
-        return self._white_pieces
+        '''Getter method for dict of white pieces on board'''
+        return self._pieces['WHITE']
 
     def get_black(self):
-        '''Getter method for _black_pieces field'''
-        return self._black_pieces
+        '''Getter method for dict of black pieces on board'''
+        return self._pieces['BLACK']
 
 
 class ChessPiece(object):
@@ -288,6 +300,15 @@ class King(ChessPiece):
         super().__init__(color, starting_location, board)
         self._name = 'King'
 
+    def validate_move(self, to_square):
+        '''
+        Method to validate move for King.
+        King can move one space in any direction.
+        Captures opponents in any direction.
+        :param to_square: String representing square to move to
+        :return: Boolean
+        '''
+        pass
 
 class Queen(ChessPiece):
 
@@ -349,13 +370,11 @@ class Pawn(ChessPiece):
         row = int(self._current_position[1])
         cap_row = row + self._fwd_direction * 1
         if cap_piece and cap_piece.get_color() != self._color:
-            print("made it here!")
             cap_col1 = chr(ord(col) + 1)
             cap_col2 = chr(ord(col) - 1)
             cap1 = cap_col1 + str(cap_row)
             cap2 = cap_col2 + str(cap_row)
-            print(cap1)
-            print(cap2)
+
             if to_square == cap1 or to_square == cap2:
                 if self._first_turn:
                     self._first_turn = False
