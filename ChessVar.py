@@ -99,8 +99,12 @@ class ChessBoard(object):
         # checks if move is valid for piece
         if piece_to_move.validate_move(to_square):
             if self._board[to_square]: # check if this is a capture
-                self.make_capture(from_square, to_square)
-                print()
+                # self.make_capture(from_square, to_square)
+                if piece_to_move.get_color() == "WHITE":
+                    self.decrease_black()
+                else:
+                    self.decrease_white()
+                print("Capture Successful")
             piece_to_move.update_current_position(to_square)
             self._board[from_square] = None
             self._board[to_square] = piece_to_move
@@ -113,14 +117,16 @@ class ChessBoard(object):
         return False # not a valid move for that piece
 
     def make_capture(self, from_square, to_square):
-        '''
+        ''' We might delete this......
         Method to update board in case of a capture move.
         :param from_square: String representing from square
         :param to_square: String representing to square
         :return: Void
         '''
         # update board: move and remove pieces from board
+
         # decrease appropriate piece count
+
         # check if game is over; update gameover a/r
         pass
 
@@ -145,6 +151,20 @@ class ChessBoard(object):
             self._turn = "WHITE"
         else:
             self._turn = "BLACK"
+
+    def decrease_white(self):
+        '''
+        Method to decrease count of white pieces
+        :return: void
+        '''
+        self._white_pieces -= 1
+
+    def decrease_black(self):
+        '''
+        Method to decrease count of black pieces
+        :return: void
+        '''
+        self._black_pieces -= 1
 
     def get_turn(self):
         '''Getter method for _turn field'''
