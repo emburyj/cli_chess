@@ -24,11 +24,14 @@ class ChessVar(object):
         # checks if game is over
         if self._game_state == "UNFINISHED":
             move = self._gameboard.make_move(from_square, to_square)
-            self.update_game_state()
             if move:
+                self.update_game_state()
                 print("Move Successful")
                 return True
+        else:
+            print(self._game_state)
         print("Invalid Move!")
+
         return False
 
     def update_game_state(self):
@@ -82,6 +85,7 @@ class ChessBoard(object):
         # check if arguments are valid
         # checking if intputs are squares on board, and check if inputs are equal to eachother
         if from_square not in self._board.keys() or to_square not in self._board.keys() or to_square == from_square:
+            print("Failed 1")
             return False
 
         # get piece currently at the to_square for moving
@@ -89,12 +93,14 @@ class ChessBoard(object):
 
         # check if empty square
         if not piece_to_move or piece_to_move.get_color() != self._turn:
+            print("Failed 2")
             return False # nobody's there
 
         # checks if move is valid for piece
         if piece_to_move.validate_move(to_square):
             if self._board[to_square]: # check if this is a capture
-                self.make_capture()
+                self.make_capture(from_square, to_square)
+                print()
             piece_to_move.update_current_position(to_square)
             self._board[from_square] = None
             self._board[to_square] = piece_to_move
@@ -103,6 +109,7 @@ class ChessBoard(object):
             self.update_turn()
             return True # move successful
 
+        print("Failed 3")
         return False # not a valid move for that piece
 
     def make_capture(self, from_square, to_square):
@@ -189,7 +196,7 @@ class ChessPiece(object):
         :to_square: String representing square to move to
         :return: Boolean
         '''
-        return False # for now
+        pass # for now
 
     def get_color(self):
         '''Getter method for _color field'''
@@ -207,7 +214,7 @@ class ChessPiece(object):
         '''
         Method to determine direction piece to be moved in. Vertical, Horizontal, or Diagonal.
         :param to_square: String representing square on board to be moved.
-        :return: 'v', 'h', 'd' or None
+        :return: String representing direction: 'v', 'h', 'd' or None
         '''
         from_row = int(self._current_position[1])
         from_col = self._current_position[0]
@@ -237,14 +244,22 @@ class ChessPiece(object):
         :param to_square: String representing square on board to move
         :return: Boolean
         '''
-        # check if horizontal
+        from_row = int(self._current_position[1])
+        from_col = self._current_position[0]
+        to_row = int(to_square[1])
+        to_col = to_square[0]
+
         if direction == 'h':
             pass
-        if direction == 'v'
-            pass
+        if direction == 'v':
+            dir = (to_row - from_row)//abs(to_row - from_row)
+            for i in range(from_row + dir, to_row, dir):
+                if self._board[f"{from_col}{str(i)}"]:
+                    return False
+            return True
         if direction == 'd':
             pass
-        # check if diag
+
         return False
 
 class King(ChessPiece):
@@ -294,6 +309,7 @@ class Pawn(ChessPiece):
         super().__init__(color, starting_location, board)
         self._name = 'Pawn'
         self._first_turn = True
+        self._valid_directions = ['v']
         self._fwd_direction = 1 # integer representing direction pawn moves on board
         if self._color == "BLACK":
             self._fwd_direction = -1
@@ -313,30 +329,51 @@ class Pawn(ChessPiece):
         row = int(self._current_position[1])
         cap_row = row + self._fwd_direction * 1
         if cap_piece and cap_piece.get_color() != self._color:
+            print("made it here!")
             cap_col1 = chr(ord(col) + 1)
             cap_col2 = chr(ord(col) - 1)
-            cap1 = cap_col1 + str(row)
-            cap2 = cap_col2 + str(row)
+            cap1 = cap_col1 + str(cap_row)
+            cap2 = cap_col2 + str(cap_row)
+            print(cap1)
+            print(cap2)
             if to_square == cap1 or to_square == cap2:
+                if self._first_turn:
+                    self._first_turn = False
                 return True
+
+        from_row = int(self._current_position[1])
+        to_row = int(to_square[1])
 
         # check if piece in path
-        # special case - first turn
-        if int(to_square[1]) - row == 2:
-            if self._first_turn:
-                for i in range(1, 3): # check if any pieces in path
-                    offset_square = row + self._fwd_direction * i
-                    if self._board[f"{col}{str(offset_square)}"]:
-                        return False
-                self._first_turn = False # no longer first turn
-                return True
-            else: # if not first turn
-                return False
-        if int(to_square[1]) - row == 1:
-            offset_square = row + self._fwd_direction
+        if self._board[to_square]:
+            print("Failed 4")
+            return False
 
+        # first turn check
+        if self._first_turn and abs(from_row - to_row) > 2:
+            print("Failed 5")
+            return False
+
+        # direction check
+        if self.check_direction(to_square) not in self._valid_directions:
+            print("Failed 9")
+            return False
+        dir = (to_row - from_row)//abs(to_row - from_row)
+        if dir != self._fwd_direction:
+            print("Failed 6")
+            return False
+        # check if one move if not first move
+        if not self._first_turn and abs(from_row - to_row) > 1:
+            print("Failed 7")
+            return False
+        # check path
+        if self.check_path(to_square, self.check_direction(to_square)):
+            self._first_turn = False
+            return True
+
+        print("Failed 8")
         return False
-
-
-
-
+if __name__ == '__main__':
+    cv = ChessVar()
+    board = cv._gameboard
+    board.display_board()
