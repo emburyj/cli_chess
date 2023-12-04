@@ -5,7 +5,7 @@ Date: 11/22/23
 Description: Defines ChessVar, ChessBoard, and ChessPiece classes and subclasses
 '''
 
-# TODO: next, maybe review requirements to make sure everything is being met with ChessVar.
+# TODO: next, work on chesspiece check path for h and d
 
 class ChessVar(object):
     def __init__(self):
@@ -278,11 +278,18 @@ class ChessPiece(object):
         '''
         from_row = int(self._current_position[1])
         from_col = self._current_position[0]
+        from_col_ord = ord(from_col)
         to_row = int(to_square[1])
         to_col = to_square[0]
+        to_col_ord = ord(to_col)
 
         if direction == 'H':
-            pass
+            dir = (to_col_ord - from_col_ord) // abs(to_col_ord - from_col_ord)
+            for i in range(from_col_ord + dir, to_col_ord, dir):
+                if self._board[f"{from_row}{chr(i)}"]:
+                    return False
+            return True
+
         if direction == 'V':
             dir = (to_row - from_row)//abs(to_row - from_row)
             for i in range(from_row + dir, to_row, dir):
