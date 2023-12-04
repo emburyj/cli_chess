@@ -356,7 +356,26 @@ class Rook(ChessPiece):
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
         self._name = 'ROOK'
+        self._valid_directions = ['H', 'V']
 
+    def validate_move(self, to_square):
+        '''
+        Method to validate move for Rook.
+        Rook can move vertically or horizontallly
+        :param to_square: String representing square to move to
+        :return: Boolean
+        '''
+
+        # check if piece of same color in destination square
+        if self._board[to_square] and self._board[to_square].get_color() == self._color:
+            return False
+
+        # check if valid direction
+        dir = self.check_direction(to_square)
+        if dir not in self._valid_directions:
+            return False
+
+        return self.check_path(to_square, dir)
 
 class Pawn(ChessPiece):
 
