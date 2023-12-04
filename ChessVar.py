@@ -228,7 +228,16 @@ class ChessPiece(object):
         :to_square: String representing square to move to
         :return: Boolean
         '''
-        pass # for now
+        # check if piece of same color in destination square
+        if self._board[to_square] and self._board[to_square].get_color() == self._color:
+            return False
+
+        # check if valid direction
+        dir = self.check_direction(to_square)
+        if dir not in self._valid_directions:
+            return False
+
+        return self.check_path(to_square, dir)
 
     def get_color(self):
         '''Getter method for _color field'''
@@ -309,7 +318,7 @@ class ChessPiece(object):
         return False
 
 class King(ChessPiece):
-
+    '''Class to represent a King chesspiece.'''
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
         self._name = 'KING'
@@ -325,26 +334,26 @@ class King(ChessPiece):
         pass
 
 class Queen(ChessPiece):
-
+    '''Class to represent a Queen chesspiece'''
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
         self._name = 'QUEEN'
 
-
-
 class Bishop(ChessPiece):
-
+    '''Class to represent a Bishop chesspiece'''
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
         self._name = 'BISHOP'
-
-
+        self._valid_directions = ['D']
 
 class Knight(ChessPiece):
-
+    '''Class to represent a Knight chesspiece'''
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
         self._name = 'KNIGHT'
+
+    def validate_move(self, to_square):
+        pass
 
     def __str__(self):
         '''Override str method because of duplicate initials with King..'''
@@ -352,7 +361,7 @@ class Knight(ChessPiece):
 
 
 class Rook(ChessPiece):
-
+    '''Class to represent a Rook chesspiece'''
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
         self._name = 'ROOK'
@@ -366,19 +375,10 @@ class Rook(ChessPiece):
         :return: Boolean
         '''
 
-        # check if piece of same color in destination square
-        if self._board[to_square] and self._board[to_square].get_color() == self._color:
-            return False
 
-        # check if valid direction
-        dir = self.check_direction(to_square)
-        if dir not in self._valid_directions:
-            return False
-
-        return self.check_path(to_square, dir)
 
 class Pawn(ChessPiece):
-
+    '''Class to represent a Pawn chesspiece.'''
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
         self._name = 'PAWN'
