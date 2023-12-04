@@ -286,7 +286,7 @@ class ChessPiece(object):
         if direction == 'H':
             dir = (to_col_ord - from_col_ord) // abs(to_col_ord - from_col_ord)
             for i in range(from_col_ord + dir, to_col_ord, dir):
-                if self._board[f"{from_row}{chr(i)}"]:
+                if self._board[f"{chr(i)}{from_row}"]:
                     return False
             return True
 
@@ -296,8 +296,15 @@ class ChessPiece(object):
                 if self._board[f"{from_col}{str(i)}"]:
                     return False
             return True
+
         if direction == 'D':
-            pass
+            dirv = (to_row - from_row)//abs(to_row - from_row)
+            dirh = (to_col_ord - from_col_ord) // abs(to_col_ord - from_col_ord)
+            for i in range(from_col_ord + dirh, to_col_ord, dirh):
+                for j in range(from_row + dirv, to_row, dirv):
+                    if self._board[f"{chr(i)}{str(j)}"]:
+                        return False
+                return True
 
         return False
 
