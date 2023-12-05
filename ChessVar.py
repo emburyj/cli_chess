@@ -223,8 +223,7 @@ class ChessPiece(object):
         # self.get_possible_moves()
 
     def validate_move(self, to_square):
-        '''Placeholder method to determine if move is valid for this piece.
-        Needs to be overridden for each subclass of chesspiece
+        '''Method to determine if move is valid for this piece.
         :to_square: String representing square to move to
         :return: Boolean
         '''
@@ -331,7 +330,15 @@ class King(ChessPiece):
         :param to_square: String representing square to move to
         :return: Boolean
         '''
-        pass
+        # check length of move
+        diff_col = abs(int(self._current_position[1]) - int(to_square._current_position[1]))
+        diff_row = abs(ord(self._current_position[0]) - ord(to_square._current_position[0]))
+
+        # if length > 1: return False
+        if diff_row > 1 or diff_col > 1:
+            return False
+        else:
+            super().validate_move(to_square)
 
 class Queen(ChessPiece):
     '''Class to represent a Queen chesspiece'''
