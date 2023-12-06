@@ -358,9 +358,27 @@ class Knight(ChessPiece):
     def __init__(self, color, starting_location, board):
         super().__init__(color, starting_location, board)
         self._name = 'KNIGHT'
+        self._valid_directions = []
 
     def validate_move(self, to_square):
-        pass
+        '''
+        Method to validate move for knight.
+        :param to_square: String representing square to move to.
+        :return: Boolean
+        '''
+        diff_col = abs(int(self._current_position[1]) - int(to_square[1]))
+        diff_row = abs(ord(self._current_position[0]) - ord(to_square[0]))
+
+        # check if teammate is at to_square
+        to_piece = self._board[to_square]
+        if to_piece and to_piece.get_color() == self._color:
+            return False
+
+        # check if valid destination
+        if (diff_col == 2 and diff_row == 1) or (diff_col == 1 and diff_row == 2):
+            return True
+
+        return False
 
     def __str__(self):
         '''Override str method because of duplicate initials with King..'''
