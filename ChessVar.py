@@ -50,7 +50,6 @@ class ChessVar(object):
 
 class ChessBoard(object):
     def __init__(self):
-        self._gameover = False
         self._pieces = { # dict representing num of pieces on board
             'WHITE': {
                 'KING': 1,
@@ -82,17 +81,17 @@ class ChessBoard(object):
             # construct the board
             for letter in alpha:
                 if (i == 1 or i == 8) and (letter == 'a' or letter == 'h'):
-                    self._board[f"{letter}{i}"] = Rook(current_color, f"{letter}{i}", self._board)
+                    self._board[f"{letter}{i}"] = ChessPiece("ROOK", current_color, f"{letter}{i}", self._board, ['V', 'H'])
                 elif (i == 1 or i == 8) and (letter == 'b' or letter =='g'):
-                    self._board[f"{letter}{i}"] = Knight(current_color, f"{letter}{i}", self._board)
+                    self._board[f"{letter}{i}"] = Knight("KNIGHT", current_color, f"{letter}{i}", self._board)
                 elif (i == 1 or i == 8) and (letter == 'c' or letter == 'f'):
-                    self._board[f"{letter}{i}"] = Bishop(current_color, f"{letter}{i}", self._board)
+                    self._board[f"{letter}{i}"] = ChessPiece("BISHOP", current_color, f"{letter}{i}", self._board, ['D'])
                 elif (i == 1 or i == 8) and letter == 'd':
-                    self._board[f"{letter}{i}"] = King(current_color, f"{letter}{i}", self._board)
+                    self._board[f"{letter}{i}"] = King("KING", current_color, f"{letter}{i}", self._board, ['V', 'H', 'D'])
                 elif (i == 1 or i == 8) and letter == 'e':
-                    self._board[f"{letter}{i}"] = Queen(current_color, f"{letter}{i}", self._board)
+                    self._board[f"{letter}{i}"] = ChessPiece("QUEEN", current_color, f"{letter}{i}", self._board, ['V', 'H', 'D'])
                 elif i == 2 or i == 7:
-                    self._board[f"{letter}{i}"] = Pawn(current_color, f"{letter}{i}", self._board)
+                    self._board[f"{letter}{i}"] = Pawn("PAWN", current_color, f"{letter}{i}", self._board, ['V'])
                 else:
                     self._board[f"{letter}{i}"] = None
 
@@ -169,10 +168,6 @@ class ChessBoard(object):
         '''Getter method for _turn field'''
         return self._turn
 
-    def get_gameover(self):
-        '''Getter method for _gameover field'''
-        return self._gameover
-
     def get_white(self):
         '''Getter method for dict of white pieces on board'''
         return self._pieces['WHITE']
@@ -182,13 +177,13 @@ class ChessBoard(object):
         return self._pieces['BLACK']
 
 class ChessPiece(object):
-
-    def __init__(self, color, starting_position, board):
+    '''Class to represent a chess piece.'''
+    def __init__(self, name, color, starting_position, board, valid_directions=None):
         self._color = color # String representing color of piece
-        self._board = board
-        self._name = ' ' # String representing type of piece (ex: pawn, bishop, etc.)
+        self._board = board # ChessBoard object
+        self._name = name # String representing type of piece (ex: pawn, bishop, etc.)
         self._current_position = starting_position # String representing current position on board
-        self._valid_directions = ['V', 'H', 'D']
+        self._valid_directions = valid_directions # list of strings representing valid directions ex: ['V', 'H', 'D']
 
     def __repr__(self):
         '''Override repr to describe name, color, and current location of piece.
@@ -303,9 +298,8 @@ class ChessPiece(object):
 
 class King(ChessPiece):
     '''Class to represent a King chesspiece.'''
-    def __init__(self, color, starting_location, board):
-        super().__init__(color, starting_location, board)
-        self._name = 'KING'
+    def __init__(self, name, color, starting_location, board, valid_directions):
+        super().__init__(name, color, starting_location, board, valid_directions)
 
     def validate_move(self, to_square):
         '''
@@ -325,25 +319,10 @@ class King(ChessPiece):
         else:
             super().validate_move(to_square)
 
-class Queen(ChessPiece):
-    '''Class to represent a Queen chesspiece'''
-    def __init__(self, color, starting_location, board):
-        super().__init__(color, starting_location, board)
-        self._name = 'QUEEN'
-
-class Bishop(ChessPiece):
-    '''Class to represent a Bishop chesspiece'''
-    def __init__(self, color, starting_location, board):
-        super().__init__(color, starting_location, board)
-        self._name = 'BISHOP'
-        self._valid_directions = ['D']
-
 class Knight(ChessPiece):
     '''Class to represent a Knight chesspiece'''
-    def __init__(self, color, starting_location, board):
-        super().__init__(color, starting_location, board)
-        self._name = 'KNIGHT'
-        self._valid_directions = []
+    def __init__(self, name, color, starting_location, board):
+        super().__init__(name, color, starting_location, board)
 
     def validate_move(self, to_square):
         '''
@@ -369,21 +348,11 @@ class Knight(ChessPiece):
         '''Override str method because of duplicate initials with King..'''
         return f"{self._color[0]} H" # H is for horse, okay?
 
-
-class Rook(ChessPiece):
-    '''Class to represent a Rook chesspiece'''
-    def __init__(self, color, starting_location, board):
-        super().__init__(color, starting_location, board)
-        self._name = 'ROOK'
-        self._valid_directions = ['H', 'V']
-
 class Pawn(ChessPiece):
     '''Class to represent a Pawn chesspiece.'''
-    def __init__(self, color, starting_location, board):
-        super().__init__(color, starting_location, board)
-        self._name = 'PAWN'
+    def __init__(self, name, color, starting_location, board, valid_directions):
+        super().__init__(name, color, starting_location, board, valid_directions)
         self._first_turn = True
-        self._valid_directions = ['V']
         self._fwd_direction = 1 # integer representing direction pawn moves on board
         if self._color == "BLACK":
             self._fwd_direction = -1
