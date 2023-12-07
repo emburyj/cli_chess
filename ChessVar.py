@@ -4,8 +4,8 @@ GitHub username: emburyj
 Date: 11/22/23
 Description: Defines ChessVar, ChessBoard, and ChessPiece classes and subclasses
 '''
-
-# TODO: next, work on chesspiece check path for h and d
+# TODO: Update chesspiece class to have name and valid_moves as kwargs; delete unnecessary classes
+# TODO: Refactor pawn validate move method. This is just too much.
 
 class ChessVar(object):
     def __init__(self):
@@ -79,6 +79,7 @@ class ChessBoard(object):
             else:
                 current_color = 'BLACK'
 
+            # construct the board
             for letter in alpha:
                 if (i == 1 or i == 8) and (letter == 'a' or letter == 'h'):
                     self._board[f"{letter}{i}"] = Rook(current_color, f"{letter}{i}", self._board)
@@ -111,15 +112,15 @@ class ChessBoard(object):
         # get piece currently at the to_square for moving
         piece_to_move = self._board[from_square]
 
-        # check if empty square
+        # check if empty square or wrong color
         if not piece_to_move or piece_to_move.get_color() != self._turn:
             print("Failed 2")
-            return False # nobody's there
+            return False # nobody's there or wrong turn
 
         # checks if move is valid for piece
         if piece_to_move.validate_move(to_square):
             if self._board[to_square]: # check if this is a capture
-                # self.make_capture(from_square, to_square)
+                # update current piece count
                 self.decrease_piece_count(self._board[to_square].get_name(), self._board[to_square].get_color())
                 print("Capture Successful")
             piece_to_move.update_current_position(to_square)
@@ -132,20 +133,6 @@ class ChessBoard(object):
 
         print("Failed 3")
         return False # not a valid move for that piece
-
-    def make_capture(self, from_square, to_square):
-        ''' We might delete this......
-        Method to update board in case of a capture move.
-        :param from_square: String representing from square
-        :param to_square: String representing to square
-        :return: Void
-        '''
-        # update board: move and remove pieces from board
-
-        # decrease appropriate piece count
-
-        # check if game is over; update gameover a/r
-        pass
 
     def display_board(self):
         '''Method to display pieces on board using ascii art'''
@@ -193,7 +180,6 @@ class ChessBoard(object):
     def get_black(self):
         '''Getter method for dict of black pieces on board'''
         return self._pieces['BLACK']
-
 
 class ChessPiece(object):
 
@@ -313,7 +299,6 @@ class ChessPiece(object):
                     if self._board[f"{chr(i)}{str(j)}"]:
                         return False
                 return True
-
         return False
 
 class King(ChessPiece):
@@ -391,16 +376,6 @@ class Rook(ChessPiece):
         super().__init__(color, starting_location, board)
         self._name = 'ROOK'
         self._valid_directions = ['H', 'V']
-
-    def validate_move(self, to_square):
-        '''
-        Method to validate move for Rook.
-        Rook can move vertically or horizontallly
-        :param to_square: String representing square to move to
-        :return: Boolean
-        '''
-
-
 
 class Pawn(ChessPiece):
     '''Class to represent a Pawn chesspiece.'''
