@@ -88,9 +88,9 @@ class ChessBoard(object):
                 elif (i == 1 or i == 8) and (letter == 'c' or letter == 'f'):
                     self._board[f"{letter}{i}"] = ChessPiece("BISHOP", current_color, f"{letter}{i}", self._board, ['D'])
                 elif (i == 1 or i == 8) and letter == 'd':
-                    self._board[f"{letter}{i}"] = King("KING", current_color, f"{letter}{i}", self._board, ['V', 'H', 'D'])
-                elif (i == 1 or i == 8) and letter == 'e':
                     self._board[f"{letter}{i}"] = ChessPiece("QUEEN", current_color, f"{letter}{i}", self._board, ['V', 'H', 'D'])
+                elif (i == 1 or i == 8) and letter == 'e':
+                    self._board[f"{letter}{i}"] = King("KING", current_color, f"{letter}{i}", self._board, ['V', 'H', 'D'])
                 elif i == 2 or i == 7:
                     self._board[f"{letter}{i}"] = Pawn("PAWN", current_color, f"{letter}{i}", self._board, ['V'])
                 else:
