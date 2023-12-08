@@ -296,11 +296,13 @@ class ChessPiece(object):
             dirh = (to_col_ord - from_col_ord) // abs(to_col_ord - from_col_ord)
             for u, i in enumerate(range(from_col_ord + dirh, to_col_ord, dirh)):
                 for v, j in enumerate(range(from_row + dirv, to_row, dirv)):
+                    if u == v:
+                        print(f"Checking if piece at {chr(i)}{str(j)}")
                     if u == v and self._board[f"{chr(i)}{str(j)}"]:
                         # print("Failed D")
                         # print(f"Someone is at {chr(i)}{str(j)}")
                         return False # Someone is at {chr(i)}{str(j)}
-                return True
+            return True
         return False
 
 class King(ChessPiece):
