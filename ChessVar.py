@@ -4,7 +4,7 @@ GitHub username: emburyj
 Date: 11/22/23
 Description: Defines ChessVar, ChessBoard, and ChessPiece classes and subclasses
 '''
-print()
+
 class ChessVar(object):
     '''A class to represent a game of chess.'''
     def __init__(self):
@@ -43,6 +43,7 @@ class ChessVar(object):
             self._game_state = "WHITE_WON"
 
 class ChessBoard(object):
+    '''Class to represent a chess board.'''
     def __init__(self):
         self._pieces = { # dict representing num of pieces on board
             'WHITE': {
@@ -91,13 +92,13 @@ class ChessBoard(object):
 
     def make_move(self, from_square, to_square):
         '''
-        Method to update board for given move
+        Method to update board for given move.
         :param from_square: String representing from square
         :param to_square: String representing to square
         :return: Boolean - False if invalid move is given
         '''
         # check if arguments are valid
-        # checking if intputs are squares on board, and check if inputs are equal to eachother
+        # check if intputs are squares on board, and check if inputs are equal to eachother
         if from_square not in self._board.keys() or to_square not in self._board.keys() or to_square == from_square:
             return False
 
@@ -183,15 +184,15 @@ class ChessPiece(object):
 
     def update_current_position(self, new_position):
         '''
-        Setter method for _current_position field; calls
-        :param new_position: String representing current location of
+        Setter method for _current_position field.
+        :param new_position: String representing new location for piece.
         :return: Void
         '''
         self._current_position = new_position
 
     def validate_move(self, to_square):
         '''Method to determine if move is valid for this piece.
-        :to_square: String representing square to move to
+        :to_square: String representing square to move to.
         :return: Boolean
         '''
         # check if piece of same color in destination square
@@ -288,9 +289,7 @@ class King(ChessPiece):
 
     def validate_move(self, to_square):
         '''
-        Method to validate move for King.
-        King can move one space in any direction.
-        Captures opponents in any direction.
+        Method to validate move for King. King can move one space in any direction.
         :param to_square: String representing square to move to
         :return: Boolean
         '''
@@ -305,7 +304,7 @@ class King(ChessPiece):
             return super().validate_move(to_square)
 
 class Knight(ChessPiece):
-    '''Class to represent a Knight chesspiece'''
+    '''Class to represent a Knight chess piece.'''
     def __init__(self, name, color, starting_location, board):
         super().__init__(name, color, starting_location, board)
 
@@ -330,11 +329,11 @@ class Knight(ChessPiece):
         return False
 
     def __str__(self):
-        '''Override str method because of duplicate initials with King..'''
+        '''Override str method because of duplicate initials with King...'''
         return f"{self._color[0]} H" # H is for horse, okay?
 
 class Pawn(ChessPiece):
-    '''Class to represent a Pawn chesspiece.'''
+    '''Class to represent a Pawn chess piece.'''
     def __init__(self, name, color, starting_location, board, valid_directions):
         super().__init__(name, color, starting_location, board, valid_directions)
         self._first_turn = True
@@ -344,10 +343,8 @@ class Pawn(ChessPiece):
 
     def validate_move(self, to_square):
         '''
-        Method to validate move for pawn.
-        On first move, Pawn can move two spaces forward
-        Otherwise, Pawn can move one space forward
-        Captures opponents if they are 1 fwd space to the diagonal l/r
+        Method to validate move for pawn. On first move, Pawn can move two spaces forward.
+        Otherwise, Pawn can move one space forward. Captures opponents if they are 1 fwd space to the diagonal l/r
         :to_square: String representing square to move to
         :return: Boolean
         '''
