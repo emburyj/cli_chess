@@ -4,10 +4,9 @@ GitHub username: emburyj
 Date: 11/22/23
 Description: Defines ChessVar, ChessBoard, and ChessPiece classes and subclasses
 '''
-# TODO: Update chesspiece class to have name and valid_moves as kwargs; delete unnecessary classes
-# TODO: Refactor pawn validate move method. This is just too much.
-
+print()
 class ChessVar(object):
+    '''A class to represent a game of chess.'''
     def __init__(self):
         self._game_state = "UNFINISHED"
         self._gameboard = ChessBoard()
@@ -23,18 +22,12 @@ class ChessVar(object):
         :param to_square: String representing to square
         :return: Boolean
         '''
-        # checks if game is over
-        print(f"Attempting to move {from_square} to {to_square}")
+        # check if game has not been won
         if self._game_state == "UNFINISHED":
             move = self._gameboard.make_move(from_square, to_square)
             if move:
                 self.update_game_state()
-                print("Move Successful")
                 return True
-        else:
-            print(self._game_state)
-        print("Invalid Move!")
-
         return False
 
     def update_game_state(self):
@@ -106,7 +99,6 @@ class ChessBoard(object):
         # check if arguments are valid
         # checking if intputs are squares on board, and check if inputs are equal to eachother
         if from_square not in self._board.keys() or to_square not in self._board.keys() or to_square == from_square:
-            # print("Failed 1")
             return False
 
         # get piece currently at the to_square for moving
@@ -114,25 +106,19 @@ class ChessBoard(object):
 
         # check if empty square or wrong color
         if not piece_to_move or piece_to_move.get_color() != self._turn:
-            # print("Failed 2")
             return False # nobody's there or wrong turn
 
         # checks if move is valid for piece
         if piece_to_move.validate_move(to_square):
-            # print('I made it here')
             if self._board[to_square]: # check if this is a capture
                 # update current piece count
                 self.decrease_piece_count(self._board[to_square].get_name(), self._board[to_square].get_color())
-                # print("Capture Successful")
-            piece_to_move.update_current_position(to_square)
-            self._board[from_square] = None
-            self._board[to_square] = piece_to_move
-
-            # update turn
-            self.update_turn()
+            piece_to_move.update_current_position(to_square) # update piece location
+            self._board[from_square] = None # update board from square
+            self._board[to_square] = piece_to_move # update board to square
+            self.update_turn() # update turn
             return True # move successful
 
-        # print("Failed 3")
         return False # not a valid move for that piece
 
     def display_board(self):
@@ -147,7 +133,6 @@ class ChessBoard(object):
                 else:
                     current_row += '   |'
             board_string += current_row + '\n'
-
         print(board_string)
 
     def update_turn(self):
@@ -159,7 +144,7 @@ class ChessBoard(object):
 
     def decrease_piece_count(self, name, color):
         '''
-        Method to decrease number of pieces on board.
+        Method to decrease number of pieces of certain type on board.
         :param name: String representing name of piece to decrement (ie PAWN etc)
         :param color: String representing color of piece to decrement ("BLACK" or "WHITE")
         :return: Void
@@ -211,13 +196,11 @@ class ChessPiece(object):
         '''
         # check if piece of same color in destination square
         if self._board[to_square] and self._board[to_square].get_color() == self._color:
-            # print("Failed A")
             return False
 
         # check if valid direction
         dir = self.check_direction(to_square)
         if dir not in self._valid_directions:
-            # print("Failed B")
             return False
 
         return self.check_path(to_square, dir)
@@ -244,7 +227,6 @@ class ChessPiece(object):
         from_col = self._current_position[0]
         to_row = int(to_square[1])
         to_col = to_square[0]
-
         row_diff = abs(from_row - to_row)
         col_diff = abs(ord(from_col) - ord(to_col))
 
@@ -279,16 +261,14 @@ class ChessPiece(object):
             dir = (to_col_ord - from_col_ord) // abs(to_col_ord - from_col_ord)
             for i in range(from_col_ord + dir, to_col_ord, dir):
                 if self._board[f"{chr(i)}{from_row}"]:
-                    # print("Failed F")
-                    return False
+                    return False # someone is at {chr(i)}{from_row}
             return True
 
         if direction == 'V':
             dir = (to_row - from_row)//abs(to_row - from_row)
             for i in range(from_row + dir, to_row, dir):
                 if self._board[f"{from_col}{str(i)}"]:
-                    # print("Failed E")
-                    return False
+                    return False # someone is at {from_col}{str(i)}
             return True
 
         if direction == 'D':
@@ -296,11 +276,7 @@ class ChessPiece(object):
             dirh = (to_col_ord - from_col_ord) // abs(to_col_ord - from_col_ord)
             for u, i in enumerate(range(from_col_ord + dirh, to_col_ord, dirh)):
                 for v, j in enumerate(range(from_row + dirv, to_row, dirv)):
-                    if u == v:
-                        print(f"Checking if piece at {chr(i)}{str(j)}")
                     if u == v and self._board[f"{chr(i)}{str(j)}"]:
-                        # print("Failed D")
-                        # print(f"Someone is at {chr(i)}{str(j)}")
                         return False # Someone is at {chr(i)}{str(j)}
             return True
         return False
@@ -322,9 +298,8 @@ class King(ChessPiece):
         diff_col = abs(int(self._current_position[1]) - int(to_square[1]))
         diff_row = abs(ord(self._current_position[0]) - ord(to_square[0]))
 
-        # if length > 1: return False
+        # check if more than one space
         if diff_row > 1 or diff_col > 1:
-            # print("Failed C")
             return False
         else:
             return super().validate_move(to_square)
@@ -398,32 +373,26 @@ class Pawn(ChessPiece):
 
         # check if piece in path
         if self._board[to_square]:
-            # print("Failed 4")
             return False
 
         # first turn check
         if self._first_turn and abs(from_row - to_row) > 2:
-            # print("Failed 5")
             return False
 
         # direction check
         if self.check_direction(to_square) not in self._valid_directions:
-            # print("Failed 9")
             return False
         dir = (to_row - from_row)//abs(to_row - from_row)
         if dir != self._fwd_direction:
-            # print("Failed 6")
             return False
         # check if one move if not first move
         if not self._first_turn and abs(from_row - to_row) > 1:
-            # print("Failed 7")
             return False
         # check path
         if self.check_path(to_square, self.check_direction(to_square)):
             self._first_turn = False
             return True
 
-        # print("Failed 8")
         return False
 if __name__ == '__main__':
     pass
