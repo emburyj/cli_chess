@@ -118,6 +118,7 @@ class ChessBoard(object):
 
         # checks if move is valid for piece
         if piece_to_move.validate_move(to_square):
+            print('I made it here')
             if self._board[to_square]: # check if this is a capture
                 # update current piece count
                 self.decrease_piece_count(self._board[to_square].get_name(), self._board[to_square].get_color())
@@ -179,10 +180,10 @@ class ChessBoard(object):
 class ChessPiece(object):
     '''Class to represent a chess piece.'''
     def __init__(self, name, color, starting_position, board, valid_directions=None):
-        self._color = color # String representing color of piece
-        self._board = board # ChessBoard object
         self._name = name # String representing type of piece (ex: pawn, bishop, etc.)
+        self._color = color # String representing color of piece
         self._current_position = starting_position # String representing current position on board
+        self._board = board # ChessBoard object
         self._valid_directions = valid_directions # list of strings representing valid directions ex: ['V', 'H', 'D']
 
     def __repr__(self):
@@ -198,10 +199,9 @@ class ChessPiece(object):
         '''
         Setter method for _current_position field; calls
         :param new_position: String representing current location of
-        :return:
+        :return: Void
         '''
         self._current_position = new_position
-        # self.get_possible_moves()
 
     def validate_move(self, to_square):
         '''Method to determine if move is valid for this piece.
@@ -210,11 +210,13 @@ class ChessPiece(object):
         '''
         # check if piece of same color in destination square
         if self._board[to_square] and self._board[to_square].get_color() == self._color:
+            print("Failed A")
             return False
 
         # check if valid direction
         dir = self.check_direction(to_square)
         if dir not in self._valid_directions:
+            print("Failed B")
             return False
 
         return self.check_path(to_square, dir)
@@ -261,8 +263,8 @@ class ChessPiece(object):
 
     def check_path(self, to_square, direction):
         '''
-        Method to deterime if path on board is clear of other pieces
-        :param to_square: String representing square on board to move
+        Method to deterime if path on board is clear of other pieces.
+        :param to_square: String representing square on board to move.
         :return: Boolean
         '''
         from_row = int(self._current_position[1])
@@ -276,6 +278,7 @@ class ChessPiece(object):
             dir = (to_col_ord - from_col_ord) // abs(to_col_ord - from_col_ord)
             for i in range(from_col_ord + dir, to_col_ord, dir):
                 if self._board[f"{chr(i)}{from_row}"]:
+                    print("Failed F")
                     return False
             return True
 
@@ -283,21 +286,24 @@ class ChessPiece(object):
             dir = (to_row - from_row)//abs(to_row - from_row)
             for i in range(from_row + dir, to_row, dir):
                 if self._board[f"{from_col}{str(i)}"]:
+                    print("Failed E")
                     return False
             return True
 
         if direction == 'D':
             dirv = (to_row - from_row)//abs(to_row - from_row)
             dirh = (to_col_ord - from_col_ord) // abs(to_col_ord - from_col_ord)
-            for i in range(from_col_ord + dirh, to_col_ord, dirh):
-                for j in range(from_row + dirv, to_row, dirv):
-                    if self._board[f"{chr(i)}{str(j)}"]:
-                        return False
+            for u, i in enumerate(range(from_col_ord + dirh, to_col_ord, dirh)):
+                for v, j in enumerate(range(from_row + dirv, to_row, dirv)):
+                    if u == v and self._board[f"{chr(i)}{str(j)}"]:
+                        print("Failed D")
+                        print(f"Someone is at {chr(i)}{str(j)}")
+                        return False # Someone is at {chr(i)}{str(j)}
                 return True
         return False
 
 class King(ChessPiece):
-    '''Class to represent a King chesspiece.'''
+    '''Class to represent a King chess piece.'''
     def __init__(self, name, color, starting_location, board, valid_directions):
         super().__init__(name, color, starting_location, board, valid_directions)
 
@@ -310,14 +316,15 @@ class King(ChessPiece):
         :return: Boolean
         '''
         # check length of move
-        diff_col = abs(int(self._current_position[1]) - int(to_square._current_position[1]))
-        diff_row = abs(ord(self._current_position[0]) - ord(to_square._current_position[0]))
+        diff_col = abs(int(self._current_position[1]) - int(to_square[1]))
+        diff_row = abs(ord(self._current_position[0]) - ord(to_square[0]))
 
         # if length > 1: return False
         if diff_row > 1 or diff_col > 1:
+            print("Failed C")
             return False
         else:
-            super().validate_move(to_square)
+            return super().validate_move(to_square)
 
 class Knight(ChessPiece):
     '''Class to represent a Knight chesspiece'''
@@ -370,13 +377,14 @@ class Pawn(ChessPiece):
         cap_piece = self._board[to_square]
         col = self._current_position[0]
         row = int(self._current_position[1])
-        cap_row = row + self._fwd_direction * 1
+        cap_row = row + self._fwd_direction
+        # check if opponent in to_square
         if cap_piece and cap_piece.get_color() != self._color:
             cap_col1 = chr(ord(col) + 1)
             cap_col2 = chr(ord(col) - 1)
             cap1 = cap_col1 + str(cap_row)
             cap2 = cap_col2 + str(cap_row)
-
+            # check if to_square is 1 space diagonal
             if to_square == cap1 or to_square == cap2:
                 if self._first_turn:
                     self._first_turn = False
@@ -415,6 +423,4 @@ class Pawn(ChessPiece):
         print("Failed 8")
         return False
 if __name__ == '__main__':
-    cv = ChessVar()
-    board = cv._gameboard
-    board.display_board()
+    pass
