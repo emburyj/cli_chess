@@ -10,10 +10,19 @@ class ChessVar(object):
     def __init__(self):
         self._game_state = "UNFINISHED"
         self._gameboard = ChessBoard()
+        self._mode = 2
 
     def get_game_state(self):
         '''Getter method for _game_state field'''
         return self._game_state
+
+    def get_gameboard(self):
+        '''Getter method for _gameboard field'''
+        return self._gameboard.get_board()
+
+    def get_turn(self):
+        '''Getter method for current turn'''
+        return self._gameboard.get_turn()
 
     def make_move(self, from_square, to_square):
         '''
@@ -35,12 +44,30 @@ class ChessVar(object):
         Method to update the _game_state field
         return: void
         '''
-        # check if white pieces of any type is zero
-        if 0 in self._gameboard.get_white().values():
-            self._game_state = "BLACK_WON"
-        # check if black pieces of any type is zero
-        elif 0 in self._gameboard.get_black().values():
-            self._game_state = "WHITE_WON"
+        if self._mode == 1:
+            if self._gameboard.get_white()['KING'] == 0:
+                self._game_state = "BLACK_WON"
+            if self._gameboard.get_black()['KING'] == 0:
+                self._game_state = "WHITE_WON"
+
+        if self._mode == 2:
+            # check if white pieces of any type is zero
+            if 0 in self._gameboard.get_white().values():
+                self._game_state = "BLACK_WON"
+            # check if black pieces of any type is zero
+            elif 0 in self._gameboard.get_black().values():
+                self._game_state = "WHITE_WON"
+
+    def set_mode(self, new_mode):
+        '''Setter mode for _mode field.
+        :new_mode: Integer representing new mode.
+        :return: Void
+        '''
+        self._mode = new_mode
+
+    def display_board(self):
+        '''Displays current board'''
+        self._gameboard.display_board()
 
 class ChessBoard(object):
     '''Class to represent a chess board.'''
@@ -164,6 +191,10 @@ class ChessBoard(object):
         '''Getter method for dict of black pieces on board'''
         return self._pieces['BLACK']
 
+    def get_board(self):
+        '''Getter method for _board field'''
+        return self._board
+
 class ChessPiece(object):
     '''Class to represent a chess piece.'''
     def __init__(self, name, color, starting_position, board, valid_directions=None):
@@ -176,7 +207,7 @@ class ChessPiece(object):
     def __repr__(self):
         '''Override repr to describe name, color, and current location of piece.
             Useful for testing...'''
-        return f"{self._color} {self._name} located at {self._current_position}"
+        return f"{self._color} {self._name} moved to {self._current_position}"
 
     def __str__(self):
         '''Override str method to return short name for display on chessboard'''
