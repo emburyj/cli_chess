@@ -7,23 +7,21 @@ Description: Main program for chess game.
 from ChessVar import *
 
 def welcome_menu():
-    print('''Welcome to the wonderful game of chess! Chess is a gentleman's
-          game and we're pleased to present you with two modes of game play.
-          Please enjoy your time with )
-
-          ''')
+    print('''Welcome to the wonderful game of CLI Chess! Chess is a gentleman's\n
+             game and we're pleased to present you with two modes of game play.\n
+             Please enjoy your time in the command line playing chess!\n''')
 
 def get_mode():
-    print("Modes for chess game play.")
+    print("Modes for chess game play:")
     print("1: Standard Chess")
     print("2: Catch 'em all Chess")
-    mode = int(input("Which mode would you like to play? "))
+    mode = int(input("Which mode would you like to play (1 or 2)? "))
     return mode
 
 def make_move(cv):
     '''
     '''
-    from_square = input("Enter location of piece to move ")
+    from_square = input("Enter location of piece to move: ")
     to_square = input("Enter where you want to move: ")
     if from_square.lower() == 'q' or to_square.lower() == 'q':
         return [1, 1]
